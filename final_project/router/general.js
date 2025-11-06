@@ -6,8 +6,17 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const {username, password} = req.body
+
+    if (username && password) {
+        if (isValid(username)){
+            users.push({"username": username, "password": password});
+        }
+
+        return res.status(200).json({message: "User created successfully"});
+    } else {
+        return res.status(404).json({message: "User already exists"})
+    }
 });
 
 // Get the book list available in the shop
@@ -20,9 +29,9 @@ public_users.get('/isbn/:isbn',function (req, res) {
     const isbn = req.params.isbn;
 
     if (books[isbn]){
-        res.send(books[isbn]);
+        res.status(200).json(books[isbn]);
     } else {
-        res.send("Book not available");
+        return res.status(404).json({message: "Book is not available"})
     }
 });
   
@@ -46,14 +55,33 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const requestedTitle = req.params.title
+    const booksKeys = Object.keys(books);
+    let matches = []
+
+  booksKeys.forEach((key) => {
+    if (books[key].title.toLowerCase() === requestedTitle.toLowerCase()){
+        matches.push(books[key]);
+    }});
+
+    if (matches.length > 0) {
+        res.send(matches)
+    } else {
+        res.status(404).send("Title not found")
+    }
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.params.isbn;
+
+    if (!books[isbn]) res.status(404).send("Book not available")
+    
+    if (Object.keys(books[isbn].reviews).length > 0){
+        res.send(books[isbn].reviews);
+    } else {
+        res.send("No reviews for this book");
+    }
 });
 
 module.exports.general = public_users;
