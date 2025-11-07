@@ -23,7 +23,9 @@ if (req.session.authorization) {
             return res.status(403).json({message: "User not authenticated"})
         }
     })
-}
+} else {
+        return res.status(403).json({message: "User not logged in"});
+    }
 });
  
 const PORT =5000;
